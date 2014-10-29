@@ -43,26 +43,26 @@ def get_image_url(url):
     arr=[]
 
     for x in url:
+        images_urls=[]
         response=get_response(x)
         parsed_body=response.text
-        result = re.findall("http://girlatlas.b0.upaiyun.com.*?jpg", parsed_body)
+        result = re.findall("http://girlatlas.b0.upaiyun.com.*?jpg!mid", parsed_body)
         if not len(result):
             break
         for img in result:
             images_urls.append(img)
 
-        match = re.search(r'href="http://girl-atlas.com/t/\d+">(.*?)</a></li>', parsed_body)
-        try:
-            title = match.group(1)
-        except:
-            print x+"error"
-
-        girl_dict={title:images_urls}
-        arr.append(girl_dict)
+	match = re.search(r'href="http://girl-atlas.com/t/\d+">(.*?)</a></li>', parsed_body)
+	try:
+		title = match.group(1)
+		girl_dict={title:images_urls}
+		arr.append(girl_dict)
+	except:
+		print x+"error"
     return arr
 
 def download(girl_list):
-    dirpath='E:/girl'
+    dirpath='F:/picture'
     if not os.path.exists(dirpath):
         os.makedirs(dirpath)
 
@@ -78,7 +78,9 @@ def download(girl_list):
                 filename = match.group()
 
             file=dirname+"/"+str(filename)
-            print x
+            print file
+            if os.path.isfile(file):
+                continue
 
             with open(file,'wb') as f:
                 response=get_response(x)
@@ -88,9 +90,9 @@ def download(girl_list):
 if __name__ == '__main__':
 
     start_time = time.time()
-    #page_urls = get_page_urls()
+    page_urls = get_page_urls()
 
-    page_urls=['http://girl-atlas.com']
+    #page_urls=['http://girl-atlas.com']
 
     album_urls=get_album_url(page_urls)
     image_urls=get_image_url(album_urls)
